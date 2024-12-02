@@ -1,0 +1,109 @@
+openapi: 3.1.0
+info:
+  title: Stability AI Image API
+  version: 1.0.0
+  description: API for generating and upscaling images using Stability AI.
+servers:
+  - url: https://3199-2407-d000-1a-e3-c8e9-4336-5d2b-8bec.ngrok-free.app/
+    description: Local development server
+paths:
+  /generate_image:
+    post:
+      summary: Generate an image based on a text prompt
+      description: Generates an image using Stability AI's core image generation API.
+      operationId: generateImage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                  description: The text prompt to generate the image.
+              required:
+                - prompt
+      responses:
+        '200':
+          description: The URL of the generated image.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  image_url:
+                    type: string
+                    format: uri
+                    description: The URL pointing to the generated image.
+        '400':
+          description: Invalid input or missing prompt.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /upscale_image:
+    post:
+      summary: Upscale an image
+      description: Upscales an image using Stability AI's fast upscaler.
+      operationId: upscaleImage
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The image file to upscale. Must not exceed 512x512 in dimensions.
+      responses:
+        '200':
+          description: The URL of the upscaled image.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  image_url:
+                    type: string
+                    format: uri
+                    description: The URL pointing to the upscaled image.
+        '400':
+          description: Invalid input or image dimensions exceed 512x512.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '500':
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
