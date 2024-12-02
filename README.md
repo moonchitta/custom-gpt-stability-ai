@@ -1,7 +1,3 @@
-Here’s a comprehensive `README.md` file for your Stability AI Image API project:
-
----
-
 # **Stability AI Image API**
 
 This project provides a Flask-based API to interact with Stability AI services. It supports generating images from text prompts and upscaling images to enhance their resolution. The API saves generated or upscaled images locally and returns their URLs for easy access.
