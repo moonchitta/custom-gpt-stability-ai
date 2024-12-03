@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: API for generating and upscaling images using Stability AI.
 servers:
-  - url: https://3199-2407-d000-1a-e3-c8e9-4336-5d2b-8bec.ngrok-free.app/
+  - url: https://9d49-182-180-57-9.ngrok-free.app
     description: Local development server
 paths:
   /generate_image:
@@ -56,20 +56,22 @@ paths:
                     type: string
   /upscale_image:
     post:
-      summary: Upscale an image
-      description: Upscales an image using Stability AI's fast upscaler.
+      summary: Upscale an image from a URL
+      description: Downloads an image from the provided URL, sends it to Stability AI's fast upscaler, and returns the URL of the upscaled image.
       operationId: upscaleImage
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
               properties:
-                image:
+                image_url:
                   type: string
-                  format: binary
-                  description: The image file to upscale. Must not exceed 512x512 in dimensions.
+                  format: uri
+                  description: The URL of the image to upscale. The URL must be accessible by the server.
+              required:
+                - image_url
       responses:
         '200':
           description: The URL of the upscaled image.
@@ -83,7 +85,7 @@ paths:
                     format: uri
                     description: The URL pointing to the upscaled image.
         '400':
-          description: Invalid input or image dimensions exceed 512x512.
+          description: Invalid input or failed to download the image from the URL.
           content:
             application/json:
               schema:
