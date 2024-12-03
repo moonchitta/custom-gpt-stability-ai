@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template_string, send_from_directory
+from flask import Flask, request, jsonify, render_template_string, send_from_directory, make_response
 import requests
 import io
 import os
@@ -19,6 +19,13 @@ API_KEY = os.getenv("API_KEY")
 
 if not API_KEY:
     raise ValueError("API_KEY is not set in the .env file")
+
+# Add ngrok-skip-browser-warning to all responses
+@app.after_request
+def add_ngrok_skip_header(response):
+    """Add the ngrok-skip-browser-warning header to all responses."""
+    response.headers["ngrok-skip-browser-warning"] = "true"
+    return response
 
 # Home endpoint to explain the API functionality
 @app.route('/')
@@ -107,7 +114,16 @@ def upscale_image():
 # Serve saved images
 @app.route('/saved_images/<filename>')
 def serve_image(filename):
-    return send_from_directory(IMAGE_SAVE_DIR, filename)
+    try:
+        # Serve the file from the directory
+        response = make_response(send_from_directory(IMAGE_SAVE_DIR, filename))
+
+        # Add the ngrok-skip-browser-warning header
+        response.headers["ngrok-skip-browser-warning"] = "true"
+
+        return response
+    except Exception as e:
+        return jsonify({"error": str(e)}), 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True)
